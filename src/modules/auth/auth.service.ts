@@ -16,4 +16,10 @@ const createUser = async (data: User) => {
   })
   return result
 }
-export const authServices = { createUser }
+const getUser = async (email: string) => {
+  const result = await prisma.user.findUnique({
+    where: { email },
+  })
+  return result
+}
+export const authServices = { createUser, getUser }

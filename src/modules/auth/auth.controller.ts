@@ -21,5 +21,37 @@ const createUserController: RequestHandler = async (req, res) => {
     })
   }
 }
+const loginController: RequestHandler = async (req, res) => {
+  try {
+    const { email, password: plainPassword } = req.body
 
-export const authController = { createUserController }
+    const existingUser = await authServices.getUser(email)
+    if (!existingUser) {
+      res.status(404).json({ error: 'user not found' })
+    } else {
+      const { id, role, password } = existingUser as User
+      if (!authUtilities.verifyPassword(plainPassword, password)) {
+        return res.status(401).json({ error: 'Invalid email or password' })
+      } else {
+        const token = authUtilities.createToken({
+          id,
+          role,
+          email,
+        })
+        res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 3600 })
+        res
+          .status(200)
+          .json(
+            new SuccessResponse(
+              'user logged in successfully',
+              undefined,
+              token,
+            ),
+          )
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ error })
+  }
+}
+export const authController = { createUserController, loginController }

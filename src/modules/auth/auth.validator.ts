@@ -1,19 +1,11 @@
-import { RequestHandler } from 'express'
-import { body, validationResult } from 'express-validator'
+import { body } from 'express-validator'
+import validate from '../../Shared/middlewares/requestValidator'
 
 const isValidBangladeshiNumber = (value: string) => {
   const regex = /^\+880\d{10}$/
   return regex.test(value)
 }
-const validate: RequestHandler = (req, res, next) => {
-  const errors = validationResult(req)
-  if (errors.isEmpty()) {
-    return next()
-  }
 
-  // If there are validation errors, respond with a 422 Unprocessable Entity status
-  return res.status(422).json({ validationErrors: errors.array() })
-}
 const createUserValidation = [
   body('name').trim().isLength({ min: 1 }).withMessage('Name is required'),
   body('email').trim().isEmail().withMessage('Invalid email format'),
@@ -36,5 +28,10 @@ const createUserValidation = [
     .withMessage('Profile image URL is required'),
   validate,
 ]
+const loginValidation = [
+  body('email').trim().isEmail().withMessage('Invalid email format'),
+  body('password').trim().notEmpty().withMessage('Password is required'),
+  validate,
+]
 
-export const authValidators = { createUserValidation }
+export const authValidators = { createUserValidation, loginValidation }

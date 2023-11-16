@@ -1,4 +1,4 @@
-class SuccessResponse<T> {
+class SuccessResponse<T = undefined> {
   private success = true
   private statusCode = 200
   private message: string
