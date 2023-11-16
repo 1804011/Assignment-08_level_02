@@ -1,8 +1,10 @@
+import cors from 'cors'
 import express, { Application } from 'express'
+import authRoutes from './modules/auth/auth.route'
 const app: Application = express()
-
-app.get('/', (req, res) => {
-  res.send('Welcome to backend')
-})
-
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use('/api/v1/auth', authRoutes)
+app.get('/', (req, res) => res.send('welcome'))
 export default app
