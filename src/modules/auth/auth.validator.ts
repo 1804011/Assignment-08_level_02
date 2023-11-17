@@ -1,10 +1,6 @@
 import { body } from 'express-validator'
 import validate from '../../Shared/middlewares/requestValidator'
-
-const isValidBangladeshiNumber = (value: string) => {
-  const regex = /^\+880\d{10}$/
-  return regex.test(value)
-}
+import { sharedUtilities } from '../../Shared/shared.utils'
 
 const createUserValidation = [
   body('name').trim().isLength({ min: 1 }).withMessage('Name is required'),
@@ -14,7 +10,7 @@ const createUserValidation = [
     .withMessage('Password must be at least 6 characters long'),
   body('role').isIn(['admin', 'customer']).withMessage('Invalid role'),
   body('contactNo')
-    .custom(isValidBangladeshiNumber)
+    .custom(sharedUtilities.isValidBangladeshiNumber)
     .withMessage('Invalid phone number format'),
   body('address')
     .optional()

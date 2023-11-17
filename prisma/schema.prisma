@@ -9,21 +9,82 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
 // schema.prisma
 enum Role {
-  admin 
+  admin
   customer
 }
-model User {
-  id String @id @default(uuid()) // Using UUID for id
-  name String
-  email String @unique
-  password String
-  role Role // Using an enum for role
-  contactNo String
-  address String
-  profileImg String
+
+enum DeliveryStatus {
+  pending
+  shipped
+  delivered
 }
 
+model User {
+  id              String            @id @default(uuid()) // Using UUID for id
+  name            String
+  email           String            @unique
+  password        String
+  role            Role // Using an enum for role
+  contactNo       String
+  address         String
+  profileImg      String
+  ReviewAndRating ReviewAndRating[]
+  Order           Order[]
+  @@map("users")
+}
 
+model Book {
+  id              String            @id @default(uuid()) // Using UUID for id
+  title           String
+  author          String
+  price           Float
+  genre           String
+  publicationDate String
+  categoryId      String
+  category        Category          @relation(fields: [categoryId], references: [id])
+  ReviewAndRating ReviewAndRating[]
+  book             OrderedBook[]
+  @@map("books")
+}
 
+model Category {
+  id    String @id @default(uuid()) // Using UUID for id
+  title String @unique
+  Book  Book[]
+
+  @@map("categories")
+}
+
+model ReviewAndRating {
+  id     String @id @default(uuid()) // Using UUID for id
+  review String
+  rating Int
+  userId String
+  bookId String
+  user   User   @relation(fields: [userId], references: [id])
+  book   Book   @relation(fields: [bookId], references: [id])
+  @@map("review-ratings")
+}
+
+model Order {
+  id           String        @id @default(uuid()) // Using UUID for id
+  userId       String
+  orderedBooks OrderedBook[]
+  status       String        @default("pending")
+  createdAt    DateTime      @default(now())
+  user         User          @relation(fields: [userId], references: [id])
+  @@map("orders")
+}
+
+model OrderedBook {
+  id         String @id @default(uuid())
+  bookId     String
+  quantity   Int
+  order      Order  @relation(fields: [orderId], references: [id])
+  orderId    String
+  book       Book   @relation(fields: [bookId], references: [id])
+  @@map("ordered-books")
+}

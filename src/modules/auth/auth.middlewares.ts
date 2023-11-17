@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express'
-import jwt, { JwtPayload, VerifyCallback } from 'jsonwebtoken'
+import jwt, { JwtPayload, Secret, VerifyCallback } from 'jsonwebtoken'
 import config from '../../config'
 import { authServices } from './auth.service'
 const checkLoginMiddleware: RequestHandler = async (req, res, next) => {
@@ -28,4 +28,27 @@ const checkLoginMiddleware: RequestHandler = async (req, res, next) => {
     next()
   }
 }
-export const authMiddlewares = { checkLoginMiddleware }
+const verifyUser = (...users: string[]) => {
+  const middleware: RequestHandler = async (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1]
+    const jwtCallback: VerifyCallback<JwtPayload | string> = (err, decoded) => {
+      if (err) {
+        res.status(401).json({ error: 'invalid token' })
+      } else {
+        const { role } = decoded as JwtPayload
+        if (users.includes(role)) {
+          next()
+        } else {
+          res.status(401).json({ error: 'unauthorized user' })
+        }
+      }
+    }
+    if (!token) {
+      res.status(400).json({ error: 'token not found' })
+    } else {
+      jwt.verify(token, config.jwt_secret as Secret, jwtCallback)
+    }
+  }
+  return middleware
+}
+export const authMiddlewares = { checkLoginMiddleware, verifyUser }
