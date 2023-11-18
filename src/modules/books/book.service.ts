@@ -17,7 +17,7 @@ const deleteBook = async (id: string) => {
   return result
 }
 const getAllBook = async () => {
-  const result = await prisma.book.findMany({})
+  const result = await prisma.book.findMany({ include: { category: true } })
   return result
 }
 const getBook = async (id: string) => {

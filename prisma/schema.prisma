@@ -73,7 +73,7 @@ model Order {
   id           String        @id @default(uuid()) // Using UUID for id
   userId       String
   orderedBooks OrderedBook[]
-  status       String        @default("pending")
+  status       DeliveryStatus        @default(pending)
   createdAt    DateTime      @default(now())
   user         User          @relation(fields: [userId], references: [id])
   @@map("orders")

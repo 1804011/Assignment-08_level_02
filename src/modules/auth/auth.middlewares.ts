@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express'
 import jwt, { JwtPayload, Secret, VerifyCallback } from 'jsonwebtoken'
+import prisma from '../../Shared/prisma'
 import config from '../../config'
 import { authServices } from './auth.service'
 const checkLoginMiddleware: RequestHandler = async (req, res, next) => {
@@ -31,12 +32,21 @@ const checkLoginMiddleware: RequestHandler = async (req, res, next) => {
 const verifyUser = (...users: string[]) => {
   const middleware: RequestHandler = async (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1]
-    const jwtCallback: VerifyCallback<JwtPayload | string> = (err, decoded) => {
+    const jwtCallback: VerifyCallback<JwtPayload | string> = async (
+      err,
+      decoded,
+    ) => {
       if (err) {
         res.status(401).json({ error: 'invalid token' })
       } else {
-        const { role } = decoded as JwtPayload
-        if (users.includes(role)) {
+        const { role, id } = decoded as JwtPayload
+        const existingUser = await prisma.user.findUnique({
+          where: { id },
+        })
+        if (!existingUser) {
+          res.status(400).json({ error: 'user not found' })
+        } else if (users.includes(role)) {
+          req.user = decoded
           next()
         } else {
           res.status(401).json({ error: 'unauthorized user' })
