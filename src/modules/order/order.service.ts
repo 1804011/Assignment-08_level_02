@@ -30,4 +30,37 @@ const createOrder = async (
 
   return order
 }
-export const orderServices = { createOrder }
+const getAllOrders = async () => {
+  const result = await prisma.order.findMany({
+    include: { orderedBooks: true },
+  })
+  return result
+}
+const getCustomerOrders = async (customerId: string) => {
+  const result = await prisma.order.findMany({
+    where: { userId: customerId },
+    include: { orderedBooks: true },
+  })
+  return result
+}
+const getAnOrderForAdmin = async (orderId: string) => {
+  const result = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { orderedBooks: true },
+  })
+  return result
+}
+const getAnOrderForCustomer = async (orderId: string, userId: string) => {
+  const result = await prisma.order.findUnique({
+    where: { id: orderId, userId },
+    include: { orderedBooks: true },
+  })
+  return result
+}
+export const orderServices = {
+  createOrder,
+  getAllOrders,
+  getCustomerOrders,
+  getAnOrderForAdmin,
+  getAnOrderForCustomer,
+}
