@@ -10,6 +10,7 @@ categoryRoutes.post(
   categoryControllers.createCategory,
 )
 categoryRoutes.get('/', categoryControllers.getAllCategory)
+categoryRoutes.get('/:id', categoryControllers.getCategory)
 categoryRoutes.delete('/:id', categoryControllers.deleteCategory)
 categoryRoutes.patch(
   '/:id',

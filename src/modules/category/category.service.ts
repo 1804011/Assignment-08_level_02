@@ -18,7 +18,16 @@ const getAllCategory = async () => {
   const result = await prisma.category.findMany({})
   return result
 }
-const getCategory = async () => {}
+const getCategory = async (id: string) => {
+  const result = await prisma.category.findUnique({
+    where: { id },
+    include: {
+      Book: true,
+    },
+  })
+  console.log(result)
+  return result
+}
 export const categoryServices = {
   createCategory,
   updateCategory,

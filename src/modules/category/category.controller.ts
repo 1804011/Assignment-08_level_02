@@ -55,10 +55,24 @@ const getAllCategory: RequestHandler = async (req, res) => {
     res.status(400).json({ error })
   }
 }
+const getCategory: RequestHandler = async (req, res) => {
+  try {
+    const { id } = req.params
+    const data = await categoryServices.getCategory(id)
+    res
+      .status(200)
+      .json(
+        new SuccessResponse<typeof data>('category found successfully', data),
+      )
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
 
 export const categoryControllers = {
   createCategory,
   updateCategory,
   deleteCategory,
   getAllCategory,
+  getCategory,
 }
