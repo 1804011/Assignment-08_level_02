@@ -2,7 +2,10 @@ import { Book } from '@prisma/client'
 import prisma from '../../Shared/prisma'
 
 const createBook = async (book: Book) => {
-  const result = await prisma.book.create({ data: book })
+  const result = await prisma.book.create({
+    data: book,
+    include: { category: true },
+  })
   return result
 }
 const updateBook = async (id: string, book: Partial<Book>) => {
@@ -21,10 +24,15 @@ const getBook = async (id: string) => {
   const result = await prisma.book.findUnique({ where: { id } })
   return result
 }
+const getBookByCategory = async (categoryId: string) => {
+  const result = await prisma.book.findMany({ where: { categoryId } })
+  return result
+}
 export const bookServices = {
   createBook,
   updateBook,
   getAllBook,
   getBook,
   deleteBook,
+  getBookByCategory,
 }

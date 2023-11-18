@@ -58,10 +58,22 @@ const getBook: RequestHandler = async (req, res) => {
     res.status(400).json({ error })
   }
 }
+const getBookByCategory: RequestHandler = async (req, res) => {
+  try {
+    const { categoryId } = req.params
+    const result = await bookServices.getBookByCategory(categoryId)
+    res
+      .status(200)
+      .json(new SuccessResponse<Book[]>('book found successfully', result))
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+}
 export const bookControllers = {
   createBook,
   updateBook,
   deleteBook,
   getAllBook,
   getBook,
+  getBookByCategory,
 }

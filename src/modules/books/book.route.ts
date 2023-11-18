@@ -11,6 +11,7 @@ bookRoutes.post(
 )
 bookRoutes.get('/', bookControllers.getAllBook)
 bookRoutes.get('/:id', bookControllers.getBook)
+bookRoutes.get('/:categoryId/category', bookControllers.getBookByCategory)
 bookRoutes.patch(
   '/:id',
   bookValidators.updateBookValidator,
